@@ -10,7 +10,6 @@ import * as wav from "node-wav";
 
 import {
   bufferSize,
-  IData,
   labels,
   MFCC,
   Row,
