@@ -6,11 +6,11 @@ export const modelName = "nanny";
 export const sampleRate = 44100;
 export const bufferSize = 512;
 export const mfccSize = 13;
-export const xSize = 100;
-export const xStep = 50;
+export const xSize = 50;
+export const xStep = 25;
 
 export const batchSize = 100;
-export const epochs = 5;
+export const epochs = 10;
 export const learningRate = 0.001;
 export const testSplit = 0.2;
 

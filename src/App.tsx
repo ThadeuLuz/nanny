@@ -4,8 +4,9 @@ import * as tf from "@tensorflow/tfjs";
 // @ts-ignore
 import * as Meyda from "meyda";
 
+import Button from "./components/Button";
+import Level from "./components/Level";
 import { bufferSize, MFCC, xSize } from "./constants";
-import Level from "./Level";
 import { loadTrainedModel, trainModel } from "./tf/train";
 
 interface IFeatures {
@@ -20,6 +21,7 @@ const colorTrue = [245, 0, 87];
 const colorFalse = [255, 193, 7];
 
 interface IAppState {
+  disabled?: boolean;
   score: number;
   volume: number;
 }
@@ -35,23 +37,23 @@ const babies = ["😴", "😐", "😭"];
 
 class App extends Component<{}, IAppState> {
   public state = {
+    disabled: false,
     score: 0,
     volume: 0
   };
 
-  public componentDidMount() {
-    // this.trainNewModel();
-    this.loadTrained();
-  }
-
   public trainNewModel = async () => {
+    this.setState({ disabled: true });
     model = await trainModel();
-    this.analyzeAudio();
+    this.analyzeMic();
+    // this.analyzeAudio();
   };
 
   public loadTrained = async () => {
+    this.setState({ disabled: true });
     model = await loadTrainedModel();
     this.analyzeMic();
+    // this.analyzeAudio();
   };
 
   public async analyzeAudio() {
@@ -79,6 +81,7 @@ class App extends Component<{}, IAppState> {
       navigator.mediaDevices.getUserMedia;
 
     const audioContext = new AudioContext();
+    console.log(audioContext.sampleRate);
 
     const constraints = { video: false, audio: true };
 
@@ -97,8 +100,6 @@ class App extends Component<{}, IAppState> {
     };
 
     const errorCallback = (err: MediaStreamError) => console.error(err);
-
-    alert("Please allow access to mic");
     navigator.getUserMedia(constraints, successCallback, errorCallback);
   }
 
@@ -111,9 +112,8 @@ class App extends Component<{}, IAppState> {
 
       if (model) {
         const predictOut = model.predict(tensor) as tf.Tensor<tf.Rank.R2>;
-        const currentScore = predictOut.dataSync()[0];
+        const score = predictOut.dataSync()[0];
         const volume = features.rms;
-        const score = this.state.score * 0.8 + currentScore * 0.2;
         this.setState({ score, volume });
         console.log(score, volume);
       }
@@ -121,7 +121,7 @@ class App extends Component<{}, IAppState> {
   };
 
   public render() {
-    const { score, volume } = this.state;
+    const { score, volume, disabled } = this.state;
     return (
       <div
         style={{
@@ -143,6 +143,13 @@ class App extends Component<{}, IAppState> {
           🔊&nbsp;
           <Level value={volume} />
         </h1>
+
+        <Button color="red" onClick={this.trainNewModel} disabled={disabled}>
+          Treinar
+        </Button>
+        <Button color="blue" onClick={this.loadTrained} disabled={disabled}>
+          Rodar
+        </Button>
       </div>
     );
   }
