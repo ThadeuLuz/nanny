@@ -1,16 +1,19 @@
 import React from "React";
 
+const height = 15;
+
 const styles = {
   level: {
     backgroundColor: "#fff",
-    borderRadius: 20,
-    height: "100%"
+    borderRadius: height / 2,
+    height: "100%",
+    minWidth: height
   },
   wrapper: {
     backgroundColor: "#ffffff33",
-    borderRadius: 20,
+    borderRadius: height / 2,
     display: "inline-block",
-    height: 20,
+    height,
     maxWidth: 400,
     width: "60%"
   }
